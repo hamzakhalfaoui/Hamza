@@ -1,0 +1,748 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mars 3D Model with Mouse Controls</title>
+    <style>
+      
+        body { margin: 0; }
+        canvas { display: block; }
+        /* Navbar Styles */
+nav {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    background-color: rgba(0, 0, 0, 0.8); /* Transparent background */
+    padding: 15px 20px;
+    z-index: 1000;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    opacity: 60%;
+}
+
+nav ul {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+
+}
+
+nav ul li {
+    margin: 0 20px;
+}
+
+nav ul li a {
+    text-decoration: none;
+    color: #fff;
+    font-size: 18px;
+    font-weight: bold;
+    transition: color 0.3s, transform 0.3s;
+    opacity: 100%;
+}
+html {
+    scroll-behavior: smooth;
+}
+
+nav ul li a:hover {
+    color: #FFD700; /* Gold color for hover effect */
+    transform: scale(1.1); /* Slight scale-up effect on hover */
+}
+
+/* Animation for smooth page load */
+@keyframes fadeIn {
+    0% {
+        opacity: 0;
+    }
+    100% {
+        opacity: 1;
+    }
+}
+
+body {
+    animation: fadeIn 1s ease-in-out; /* Smooth fade-in animation for the body */
+}
+
+/* Adjust the canvas size to fit the screen below the navbar */
+#planet-container {
+    margin-top: 80px; /* Ensure the model is not hidden under the navbar */
+}
+
+/* Hover Effects for Navbar Links */
+nav ul li a {
+    position: relative;
+}
+
+nav ul li a::before {
+    content: '';
+    position: absolute;
+    bottom: -5px;
+    left: 0;
+    width: 100%;
+    height: 3px;
+    background-color: #FFD700;
+    transform: scaleX(0);
+    transform-origin: bottom right;
+    transition: transform 0.3s ease-out;
+}
+
+nav ul li a:hover::before {
+    transform: scaleX(1);
+    transform-origin: bottom left;
+}
+
+/* Add some padding to the content section */
+.content {
+    padding: 80px 20px; /* Give room for the navbar */
+}
+/* Basic Navbar Styling */
+nav {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    background-color: rgba(0, 0, 0, 0.8);
+    padding: 15px 20px;
+    z-index: 1000;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+nav ul {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+}
+
+nav ul li {
+    margin: 0 20px;
+    position: relative; /* Ensure the dropdown is positioned correctly */
+}
+
+nav ul li a {
+    text-decoration: none;
+    color: #fff;
+    font-size: 18px;
+    font-weight: bold;
+    transition: color 0.3s, transform 0.3s;
+}
+
+/* Dropdown Menu */
+nav ul li.dropdown:hover .dropdown-menu {
+    display: grid;  /* Use grid to display items in a 2x2 layout */
+}
+
+.dropdown-menu {
+    display: none; /* Hide the dropdown by default */
+    position: absolute;
+    top: 100%; /* Position it just below the "Explore" link */
+    left: 0;
+    background-color: rgba(0, 0, 0, 0.9);  /* Slightly darker for the dropdown */
+    padding: 20px;
+    border-radius: 5px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.6);
+    opacity: 0; /* Initially hidden */
+    pointer-events: none; /* Prevent interaction before it is shown */
+    transition: opacity 0.5s ease, transform 0.3s ease; /* Smooth fade-in and movement */
+    transform: translateY(10px); /* Start with a slight offset to create a smooth slide-in effect */
+    grid-template-columns: repeat(2, 1fr); /* Create 2 columns */
+    gap: 20px; /* Space between the options */
+    margin-left: -60px;
+    
+}
+
+.dropdown-menu li {
+    margin: 0;
+}
+
+.dropdown-menu li a {
+    color: #fff;
+    font-size: 22px; /* Increase the size of the options */
+    font-weight: normal;
+    text-decoration: none;
+    transition: color 0.3s, transform 0.3s;
+}
+
+
+/* Navbar hover effect */
+nav ul li a:hover {
+    color: #FFD700;
+    transform: scale(1.1);
+}
+
+/* Show dropdown smoothly when hovered */
+nav ul li.dropdown:hover .dropdown-menu {
+    opacity: 1;
+    pointer-events: auto; /* Enable interaction once shown */
+    transform: translateY(0); /* Remove the initial offset */
+    animation: slideIn 0.6s ease-out; /* Custom animation for smooth appearance */
+}
+
+/* Animation for dropdown */
+@keyframes slideIn {
+    0% {
+        opacity: 0;
+        transform: translateY(10px); /* Initial position below */
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0); /* Final position */
+    }
+}
+
+/* Hover effect for the dropdown menu to make it active */
+nav ul li.dropdown:hover .dropdown-menu li a {
+    transition: color 0.3s, transform 0.3s;
+    color: #FFD700; /* Color change on hover */
+    transform: scale(1.1); /* Slight zoom effect */
+}
+#window {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 400px;
+            height: 300px;
+            background: rgba(0, 0, 0, 0.9);
+            color: white;
+            display: none;
+            z-index: 1000;
+            padding: 20px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.7);
+            border-radius: 10px;
+            opacity: 0;
+            transition: opacity 0.5s ease;
+        }
+        #window.open {
+            display: block;
+            opacity: 1;
+        }
+        #window h2 {
+            margin-top: 0;
+        }
+        #window button {
+            background: #f39c12;
+            color: white;
+            border: none;
+            padding: 10px;
+            margin-top: 20px;
+            cursor: pointer;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+        #window button:hover {
+            background: #e67e22;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Import Three.js -->
+    <script src="https://cdn.jsdelivr.net/npm/three@0.130.1/build/three.min.js"></script>
+
+    <!-- Import GLTFLoader -->
+    <script src="https://cdn.jsdelivr.net/npm/three@0.130.1/examples/js/loaders/GLTFLoader.js"></script>
+
+    <!-- Import OrbitControls -->
+    <script src="https://cdn.jsdelivr.net/npm/three@0.130.1/examples/js/controls/OrbitControls.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.9.1/gsap.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.130.1/examples/js/loaders/DRACOLoader.js"></script>
+
+    <nav>
+      <ul>
+          <li><a href="#">Home</a></li>
+          <li class="dropdown">
+              <a href="#">Explore</a>
+              <ul class="dropdown-menu">
+                  <li><a href="#">Option</a></li>
+                  <li><a href="#">Option</a></li>
+                  <li><a href="#">Option</a></li>
+                  <li><a href="#">Option</a></li>
+              </ul>
+          </li>
+          
+          <li><a href="">About</a></li>
+          <li><a href="contact.html">Contact</a></li>
+      </ul>
+  </nav>
+      <div id="window">
+        <h2>Planet Information</h2>
+        <p>Welcome to Mars! Here is some information about this planet...</p>
+        <button id="closeBtn">Close</button>
+    </div>
+<script>
+    let scene, camera, renderer, loader, marsModel, controls, stars, rocketModel, astronautModel;
+
+scene = new THREE.Scene();
+
+// Set initial camera position to be farther away for a longer intro effect
+camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+camera.position.z = 100;  // Start even farther away from the planet (zoomed-out)
+
+renderer = new THREE.WebGLRenderer();
+renderer.setSize(window.innerWidth, window.innerHeight);
+document.body.appendChild(renderer.domElement);
+
+let light = new THREE.AmbientLight(0x404040, 1);
+scene.add(light);
+
+let directionalLight = new THREE.DirectionalLight(0xffffff, 1);
+directionalLight.position.set(5, 5, 5).normalize();
+scene.add(directionalLight);
+
+// Create and configure the DRACOLoader
+const dracoLoader = new THREE.DRACOLoader();
+dracoLoader.setDecoderPath('https://cdn.jsdelivr.net/npm/three@0.130.1/examples/js/libs/draco/');
+
+// Create the GLTFLoader and add DRACOLoader support
+const gltfLoader = new THREE.GLTFLoader();
+gltfLoader.setDRACOLoader(dracoLoader);
+
+// Load the Mars model
+gltfLoader.load('models/mars.glb', function (gltf) {
+    marsModel = gltf.scene;
+    scene.add(marsModel);
+
+    console.log('Model loaded successfully!');
+
+    // Set initial small scale
+    marsModel.scale.set(0.1, 0.1, 0.1); // Start small
+
+    // Animate the scale to normal size
+    gsap.to(marsModel.scale, {
+        duration: 3, // Duration for the animation (longer duration for smoother scaling)
+        x: 1, y: 1, z: 1, // Normal size
+        ease: "power2.out" // Easing function for smooth animation
+    });
+
+    marsModel.traverse(function (child) {
+        if (child.isMesh) {
+            if (child.material.map) {
+                child.material.map.encoding = THREE.sRGBEncoding;
+            }
+            child.material.needsUpdate = true;
+        }
+    });
+
+    // Call createStars after the Mars model is loaded
+    createStars();
+
+}, undefined, function (error) {
+    console.error('Error loading Mars model:', error);
+});
+
+// Load the Rocket model with Draco support
+gltfLoader.load('models/rocket.glb', function (gltf) {
+    rocketModel = gltf.scene;
+    scene.add(rocketModel);
+
+    console.log('Rocket model loaded successfully!');
+
+    // Scale and position the rocket around the planet
+    rocketModel.scale.set(0.05, 0.05, 0.05);
+    rocketModel.position.set(3, 0, 0); // Position the rocket next to the planet
+
+}, undefined, function (error) {
+    console.error('Error loading rocket model:', error);
+});
+
+// Load the astronaut model
+gltfLoader.load('models/astronaut.glb', function (gltf) {
+    astronautModel = gltf.scene;
+    scene.add(astronautModel);
+
+    console.log('Astronaut model loaded successfully!');
+
+    // Scale and position the astronaut
+    astronautModel.scale.set(0.05, 0.05, 0.05);  // Adjust size if necessary
+    astronautModel.position.set(15, 0, 0); // Position astronaut at a radius of 15 units around Mars
+}, undefined, function (error) {
+    console.error('Error loading astronaut model:', error);
+});
+
+// Orbit controls
+controls = new THREE.OrbitControls(camera, renderer.domElement);
+controls.enableDamping = true;
+controls.dampingFactor = 0.25;
+controls.screenSpacePanning = false;
+
+// Function to create stars
+function createStars() {
+    const starCount = 2000; // Number of stars
+    const starGeometry = new THREE.BufferGeometry();
+    const starMaterial = new THREE.PointsMaterial({
+        color: 0xffffff,
+        size: 0.05,
+        transparent: true
+    });
+
+    const starPositions = [];
+    const starOpacities = [];
+
+    for (let i = 0; i < starCount; i++) {
+        const x = Math.random() * 400 - 200;
+        const y = Math.random() * 400 - 200;
+        const z = Math.random() * 400 - 200;
+        starPositions.push(x, y, z);
+
+        // Initialize opacity randomly between 0.1 and 1
+        starOpacities.push(Math.random() * 0.9 + 0.1);
+    }
+
+    starGeometry.setAttribute('position', new THREE.Float32BufferAttribute(starPositions, 3));
+    starGeometry.setAttribute('opacity', new THREE.Float32BufferAttribute(starOpacities, 1));
+
+    stars = new THREE.Points(starGeometry, starMaterial);
+    scene.add(stars);
+}
+
+// Function to animate the astronaut orbiting Mars
+let orbitAngle = 0;
+function animateAstronaut() {
+    if (astronautModel) {
+        orbitAngle += 0.001; // Increase the angle to make it move slowly around Mars
+
+        // Calculate the astronaut's new position on the orbit
+        const radius = 15; // Orbit radius (distance from Mars)
+        astronautModel.position.x = Math.cos(orbitAngle) * radius;
+        astronautModel.position.z = Math.sin(orbitAngle) * radius;
+
+        // Make the astronaut rotate on its axis to add some dynamic effect
+        astronautModel.rotation.y += 0.005; // Adjust the speed of rotation if needed
+    }
+}
+
+// Function to animate the stars with fade in/out effect
+function animateStars() {
+    const opacities = stars.geometry.attributes.opacity.array;
+
+    // Iterate through each star and update its opacity
+    for (let i = 0; i < opacities.length; i++) {
+        const fadeDirection = Math.random() > 0.5 ? 1 : -1; // Randomly choose fade in (1) or fade out (-1)
+        opacities[i] += fadeDirection * (Math.random() * 0.01);  // Increase or decrease opacity slightly
+
+        // Ensure opacity stays within bounds (0 to 1)
+        if (opacities[i] > 1) opacities[i] = 1;
+        if (opacities[i] < 0) opacities[i] = 0;
+    }
+
+    // Mark the opacity attribute for update
+    stars.geometry.attributes.opacity.needsUpdate = true;
+}
+
+// Function to animate camera zoom
+function animateCameraZoom() {
+    gsap.to(camera.position, {
+        duration: 4,  // Duration of the zoom-in effect (longer time)
+        z: 5,         // Normal position close to the planet
+        ease: "power2.out"  // Smooth easing
+    });
+}
+
+function animate() {
+    requestAnimationFrame(animate);
+
+    controls.update();
+
+    if (marsModel) {
+        marsModel.rotation.y += 0.005;  // Rotate Mars model
+    }
+
+    if (rocketModel) {
+        rocketModel.rotation.y += 0.005; // Optional: Rotate the rocket for some animation
+    }
+
+    // Animate the astronaut orbit
+    animateAstronaut();
+
+    // Animate the stars (fading in and out)
+    if (stars) {
+        animateStars();
+    }
+
+    renderer.render(scene, camera);
+}
+
+// Start the zoom-in animation after a slight delay
+setTimeout(() => {
+    animateCameraZoom();
+}, 1000);  // Delay the zoom-in animation for 1 second
+
+animate();
+
+window.addEventListener('resize', function () {
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    camera.aspect = window.innerWidth / window.innerHeight;
+    camera.updateProjectionMatrix();
+});
+// Raycaster for detecting clicks on the rocket
+const raycaster = new THREE.Raycaster();
+const mouse = new THREE.Vector2();
+
+// Add click interaction to the rocket
+window.addEventListener('click', (event) => {
+    mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+    mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+
+    raycaster.setFromCamera(mouse, camera);
+    const intersects = raycaster.intersectObject(rocketModel, true);
+
+    if (intersects.length > 0) {
+        // Zoom into the planet
+        gsap.to(camera.position, {
+            duration: 1.5,
+            x: marsModel.position.x,
+            y: marsModel.position.y,
+            z: marsModel.position.z + 1,
+            ease: 'power2.out',
+            onComplete: () => {
+                // Show the "Explore" button
+                showExploreButton();
+            },
+        });
+    }
+});
+
+// Function to show the "Explore" button
+function showExploreButton() {
+    const exploreButton = document.createElement('button');
+    exploreButton.textContent = 'Explore';
+    exploreButton.style.position = 'fixed';
+    exploreButton.style.top = '50%';
+    exploreButton.style.left = '50%';
+    exploreButton.style.transform = 'translate(-50%, -50%)';
+    exploreButton.style.padding = '10px 20px';
+    exploreButton.style.fontSize = '18px';
+    exploreButton.style.fontFamily = 'Arial, sans-serif';
+    exploreButton.style.cursor = 'pointer';
+    exploreButton.style.backgroundColor = '#ff4500';
+    exploreButton.style.color = 'white';
+    exploreButton.style.border = 'none';
+    exploreButton.style.opacity = '50%';
+    exploreButton.style.borderRadius = '15px';
+    exploreButton.style.boxShadow = '0 4px 10px rgba(0, 0, 0, 0.3)';
+    document.body.appendChild(exploreButton);
+
+    exploreButton.addEventListener('click', () => {
+        // Remove the button after clicking
+        exploreButton.remove();
+
+        // Start zoom out and rotation animation
+        startZoomOutAndFade();
+    });
+}
+
+// Function to start zoom out, rotation, and fade animations
+function startZoomOutAndFade() {
+    // Make the planet rotate faster
+    gsap.to(marsModel.rotation, {
+        y: marsModel.rotation.y + Math.PI * 2,
+        duration: 3,
+        ease: 'power2.out',
+    });
+
+    // Zoom the camera out
+    gsap.to(camera.position, {
+        duration: 3,
+        x: 0,
+        y: 0,
+        z: 100,
+        ease: 'power2.inOut',
+    });
+
+    // Fade out the planet and rocket
+    gsap.to([marsModel, rocketModel], {
+        duration: 1.5,
+        opacity: 0,
+        onComplete: () => {
+            // Properly dispose and remove both models after fade
+            setTimeout(() => {
+                // Dispose of Mars model
+                marsModel.traverse((child) => {
+                    if (child.isMesh) {
+                        child.geometry.dispose();
+                        child.material.dispose();
+                    }
+                });
+                scene.remove(marsModel);
+                marsModel = null;
+
+                // Dispose of Rocket model
+                rocketModel.traverse((child) => {
+                    if (child.isMesh) {
+                        child.geometry.dispose();
+                        child.material.dispose();
+                    }
+                });
+                scene.remove(rocketModel);
+                rocketModel = null;
+
+                // Display information and allow scrolling
+                displayInformationPage();
+            }, 1500);
+        },
+    });
+}
+
+// Function to display information page
+function displayInformationPage() {
+    // Clear the current content
+    document.body.innerHTML = '';
+
+    // Create and add video background
+    const videoBackground = document.createElement('video');
+    videoBackground.src = 'universe.mp4'; // Replace with the path to your video
+    videoBackground.autoplay = true;
+    videoBackground.muted = false;
+    videoBackground.style.position = 'fixed';
+    videoBackground.style.top = '0';
+    videoBackground.style.left = '0';
+    videoBackground.style.width = '100%';
+    videoBackground.style.height = '100%';
+    videoBackground.style.objectFit = 'cover';
+    videoBackground.style.zIndex = '-1';
+    videoBackground.style.opacity = '0'; // Initially hidden
+    videoBackground.style.transition = 'opacity 1.5s';
+    document.body.appendChild(videoBackground);
+
+    // Fade in the video
+    setTimeout(() => {
+        videoBackground.style.opacity = '1';
+    }, 100);
+
+    // Transition to image background after video ends
+    videoBackground.addEventListener('ended', () => {
+        // Fade out the video
+        videoBackground.style.transition = 'opacity 1.5s';
+        videoBackground.style.opacity = '0';
+
+        // Add image background
+        setTimeout(() => {
+            videoBackground.remove();
+
+            const imageBackground = document.createElement('div');
+            imageBackground.style.position = 'fixed';
+            imageBackground.style.top = '0';
+            imageBackground.style.left = '0';
+            imageBackground.style.width = '100%';
+            imageBackground.style.height = '100%';
+            imageBackground.style.backgroundImage = "url('b.jpg')"; // Replace with the path to your image
+            imageBackground.style.backgroundSize = 'cover';
+            imageBackground.style.backgroundPosition = 'center';
+            imageBackground.style.zIndex = '-1';
+            imageBackground.style.transition = 'opacity 1.5s';
+            imageBackground.style.opacity = '0';
+            document.body.appendChild(imageBackground);
+
+            // Fade in the image
+            setTimeout(() => {
+                imageBackground.style.opacity = '1';
+
+                // Fade in content
+                const contentContainer = createContent();
+                contentContainer.style.opacity = '0'; // Initially hidden
+                contentContainer.style.transition = 'opacity 1.5s';
+                document.body.appendChild(contentContainer);
+
+                setTimeout(() => {
+                    contentContainer.style.opacity = '1';
+                }, 100);
+            }, 100);
+        }, 1500);
+    });
+}
+
+// Function to create content container
+function createContent() {
+    // Create a container for the content
+    const contentContainer = document.createElement('div');
+    contentContainer.style.width = '100%';
+    contentContainer.style.padding = '20px';
+    contentContainer.style.boxSizing = 'border-box';
+    contentContainer.style.fontFamily = 'Arial, sans-serif';
+    contentContainer.style.color = '#fff';
+    contentContainer.style.overflowY = 'auto';
+
+    // Add main section with image and text
+    const mainSection = document.createElement('div');
+    mainSection.style.display = 'flex';
+    mainSection.style.alignItems = 'center';
+    mainSection.style.marginBottom = '40px';
+
+    const image = document.createElement('img');
+    image.src = 'b.jpg'; // Replace with the actual Mars image path
+    image.style.width = '300px';
+    image.style.height = '300px';
+    image.style.objectFit = 'cover';
+    image.style.borderRadius = '10px';
+    image.style.marginRight = '20px';
+
+    const text = document.createElement('div');
+    text.innerHTML = `<h1 style="font-size: 24px; color: #ff4500;">استكشاف المريخ</h1>
+                      <p style="font-size: 16px; line-height: 1.6;">
+                          لمريخ (ينطق بالفرنسية: /maʁs/) هو الكوكب الرابع في النظام الشمسي من حيث الترتيب المتزايد للبعد عن الشمس والثاني من حيث الحجم والكتلة. تتراوح المسافة بينه وبين الشمس بين 1.381 و1.666 الاتحاد الأفريقي (206.6 إلى 249.2 مليون كيلومتر)، وله فترة مدارية تبلغ 669.58 يومًا مريخيًا (686.71 يومًا أو 1.88 سنة أرضية).
+
+وهو كوكب تلوري، مثل عطارد والزهرة والأرض. وهي أقل كتلة من الأرض بحوالي عشر مرات، ولكنها أكبر من كتلة القمر بعشر مرات. تمثل تضاريسها أوجه تشابه مع القمر، من خلال حفره وأحواض تأثيره، ومع الأرض، من خلال تكويناتها ذات الأصل التكتوني والمناخي مثل البراكين، والشقوق، والوديان، والميسا، وحقول الكثبان الرملية، والقمم الجليدية القطبية. أطول بركان في النظام الشمسي، أوليمبوس مونس (وهو بركان درعي)، وأكبر وادي، فاليس مارينريس، موجودان على المريخ.
+
+لقد فقد المريخ اليوم كل نشاطه الجيولوجي الداخلي تقريبًا، ولا تزال هناك أحداث بسيطة فقط تحدث بشكل عرضي على سطحه، مثل الانهيارات الأرضية، وربما ينابيع ثاني أكسيد الكربون في المناطق القطبية، وربما الزلازل، أو حتى الانفجارات البركانية النادرة على شكل حمم صغيرة. التدفقات3.
+                      </p>`;
+
+    mainSection.appendChild(image);
+    mainSection.appendChild(text);
+
+    // Add more information sections
+    const moreInfo = document.createElement('div');
+    moreInfo.innerHTML = `
+    <nav>
+      <ul>
+          <li><a href="#">Home</a></li>
+          <li class="dropdown">
+              <a href="#">Explore</a>
+              <ul class="dropdown-menu">
+                  <li><a href="#">Option</a></li>
+                  <li><a href="#">Option</a></li>
+                  <li><a href="#">Option</a></li>
+                  <li><a href="#">Option</a></li>
+              </ul>
+          </li>
+          <li><a href="#">About</a></li>
+          <li><a href="#">Contact</a></li>
+      </ul>
+  </nav>
+        <section style="margin-bottom: 20px;">
+            <h2 style="font-size: 20px; color: #0077b6;">جو المريخ</h2>
+            <p style="font-size: 16px; line-height: 1.6;">
+                لغلاف الجوي للمريخ رقيق فحجمه لا يمثل سوى 1% من الغلاف الجوي للأرض، أي إن الهواء على المريخ أقل بنسبة 99% منه على الأرض، ويرجع ذلك جزئيا إلى أن حجم المريخ يقارب نصف حجم الأرض، ومن ثم فإن جاذبيته ليست قوية بما يكفي لمنع غازات الغلاف الجوي من الهروب إلى الفضاء..
+            </p>
+        </section>
+        <section style="margin-bottom: 20px;">
+            <h2 style="font-size: 20px; color: #0077b6;">ميزات السطح</h2>
+            <p style="font-size: 16px; line-height: 1.6;">
+                يعتبر المريخ كوكب صخري ومعظم سطحه أحمر إلا بعض البقع ذات اللون الأغمق بسبب تربته وصخوره، والغلاف الجوي لكوكب المريخ قليل الكثافة ويتكون أساساً من ثاني أكسيد الكربون وكميات قليلة من بخار الماء وجو المريخ أبرد من الأرض، وتبلغ السنة على المريخ 687 يومًا أرضيًا.
+            </p>
+        </section>
+        <section style="margin-bottom: 20px;">
+            <h2 style="font-size: 20px; color: #0077b6;">استكشاف المستقبل</h2>
+            <p style="font-size: 16px; line-height: 1.6;">
+                تهدف المهام القادمة إلى اكتشاف المزيد عن ماضي المريخ، والبحث عن علامات الحياة، وتمهيد الطريق لاستكشاف الإنسان.
+            </p>
+        </section>
+        <section style="margin-bottom: 20px;">
+            <h2 style="font-size: 20px; color: #0077b6;">استكشاف المستقبل</h2>
+            <p style="font-size: 16px; line-height: 1.6;">
+                سيقدم مسبار الأمل أول دراسة شاملة عن مناخ كوكب المريخ وطبقات غلافه الجوي المختلفة عندما يصل إلى الكوكب الأحمر عام 2021 في مهمة تستمر لمدة سنة مريخية واحدة سيساعد على الإجابة على أسئلة علمية رئيسية حول الغلاف الجوي للمريخ و أسباب فقدان غازي الهيدروجين والأكسجين من غلافه الجوي..
+            </p>
+        </section>
+    `;
+
+    // Append sections to container
+    contentContainer.appendChild(mainSection);
+    contentContainer.appendChild(moreInfo);
+
+    return contentContainer;
+}
+
+</script>
