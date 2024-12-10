@@ -1,0 +1,51 @@
+body{
+	background-image: url(image1.jpg);
+	background-repeat: no-repeat;
+	background-size: 100%;
+}
+form{
+	border: dotted;
+	border-radius: 5px;
+}
+fieldset{
+	border: dotted;
+}
+input{
+   color: purple;
+   border-radius: 5px;
+   border: double;
+}
+label{
+	font-style: italic;
+	font-family: cursive;
+	color: red;
+	border: dotted;
+	background-color: purple;
+}
+input:hover{
+	font-style: italic;
+	font-family: cursive;
+	color: red;
+	border: dotted;
+	background-color: purple;
+}
+label:hover{
+   color: green;
+   border-radius: 5px;
+   border: dotted;
+}
+h1{
+	color: brown;
+	font-style: revert-layer;
+	font-family: cursive;
+	text-align: center;
+}
+h1:hover{
+	transform: rotate(360deg);
+
+}
+legend{
+	color: brown;
+	font-style: revert-layer;
+	font-family: cursive;
+}
